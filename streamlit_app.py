@@ -5,7 +5,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
-import lightgbm  # Ensure lightgbm is imported
 
 # Set page config
 st.set_page_config(
@@ -125,7 +124,7 @@ elif page == "About":
     - Feature importance visualization
     
     ### Technical Details:
-    - **Model Type**: LightGBM Classifier
+    - **Model Type**: Random Forest Classifier
     - **Accuracy**: {:.2f}%
     - **Dataset**: Wine Quality Dataset ({} samples)
     """.format(accuracy_score(y, model.predict(scaler.transform(X))) * 100, len(df)))
