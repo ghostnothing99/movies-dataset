@@ -1,66 +1,169 @@
-import altair as alt
-import pandas as pd
 import streamlit as st
+import matplotlib.pyplot as plt
+import joblib
+import numpy as np
+import pandas as pd
+import os
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, roc_curve, auc, precision_recall_curve
+import seaborn as sns
 
-# Show the page title and description.
-st.set_page_config(page_title="Movies dataset", page_icon="🎬")
-st.title("🎬 Movies dataset")
-st.write(
-    """
-    This app visualizes data from [The Movie Database (TMDB)](https://www.kaggle.com/datasets/tmdb/tmdb-movie-metadata).
-    It shows which movie genre performed best at the box office over the years. Just 
-    click on the widgets below to explore!
-    """
+# Set page config
+st.set_page_config(
+    page_title="Wine Quality Prediction",
+    page_icon="🍷",
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
+# Load trained model and scaler
+@st.cache_resource
+def load_model():
+    model_path = 'models/best_wine_quality_model.joblib'
+    scaler_path = 'models/scaler.joblib'
 
-# Load the data from a CSV. We're caching this so it doesn't reload every time the app
-# reruns (e.g. if the user interacts with the widgets).
+    if os.path.exists(model_path) and os.path.exists(scaler_path):
+        model = joblib.load(model_path)
+        scaler = joblib.load(scaler_path)
+        st.success("Model and scaler loaded successfully!")
+        return model, scaler
+    else:
+        st.error("Model or scaler file not found. Please ensure the files exist.")
+        st.stop()
+
+model, scaler = load_model()
+
+# Load dataset
 @st.cache_data
 def load_data():
-    df = pd.read_csv("data/movies_genres_summary.csv")
-    return df
+    data_path = 'D:/My/Wine/data/winequality.csv'
+    if not os.path.exists(data_path):
+        st.error(f"Dataset file not found at: {data_path}")
+        st.stop()
+    
+    df = pd.read_csv(data_path)
+    X = df.drop('quality', axis=1)
+    y = df['quality'] - df['quality'].min()  # Normalize labels to start from 0
 
+    # Ensure feature alignment
+    if hasattr(scaler, 'feature_names_in_'):
+        required_features = list(scaler.feature_names_in_)
+        missing_features = [feat for feat in required_features if feat not in X.columns]
+        if missing_features:
+            st.error(f"Missing required features: {missing_features}")
+            st.stop()
+        X = X[required_features]
 
-df = load_data()
+    return df, X, y
 
-# Show a multiselect widget with the genres using `st.multiselect`.
-genres = st.multiselect(
-    "Genres",
-    df.genre.unique(),
-    ["Action", "Adventure", "Biography", "Comedy", "Drama", "Horror"],
-)
+df, X, y = load_data()
 
-# Show a slider widget with the years using `st.slider`.
-years = st.slider("Years", 1986, 2006, (2000, 2016))
+# Navigation
+st.sidebar.title("Navigation")
+page = st.sidebar.radio("Go to", ["Home", "Analytics", "About"])
 
-# Filter the dataframe based on the widget input and reshape it.
-df_filtered = df[(df["genre"].isin(genres)) & (df["year"].between(years[0], years[1]))]
-df_reshaped = df_filtered.pivot_table(
-    index="year", columns="genre", values="gross", aggfunc="sum", fill_value=0
-)
-df_reshaped = df_reshaped.sort_values(by="year", ascending=False)
+# Home Page
+if page == "Home":
+    st.title("🍷 Wine Quality Prediction")
 
+    # Input features in sidebar
+    st.sidebar.header("Input Features")
+    input_features = {}
+    for feature in scaler.feature_names_in_:
+        input_features[feature] = st.sidebar.number_input(
+            feature,
+            value=float(X[feature].mean()),
+            step=0.1
+        )
 
-# Display the data as a table using `st.dataframe`.
-st.dataframe(
-    df_reshaped,
-    use_container_width=True,
-    column_config={"year": st.column_config.TextColumn("Year")},
-)
+    # Prediction
+    if st.sidebar.button("Predict Quality"):
+        try:
+            input_df = pd.DataFrame([input_features])
+            input_scaled = scaler.transform(input_df)
+            prediction = model.predict(input_scaled)[0] + df['quality'].min()
+            st.success(f"Predicted Wine Quality: {prediction}/10")
+            st.balloons()
+        except Exception as e:
+            st.error(f"Prediction failed: {str(e)}")
 
-# Display the data as an Altair chart using `st.altair_chart`.
-df_chart = pd.melt(
-    df_reshaped.reset_index(), id_vars="year", var_name="genre", value_name="gross"
-)
-chart = (
-    alt.Chart(df_chart)
-    .mark_line()
-    .encode(
-        x=alt.X("year:N", title="Year"),
-        y=alt.Y("gross:Q", title="Gross earnings ($)"),
-        color="genre:N",
-    )
-    .properties(height=320)
-)
-st.altair_chart(chart, use_container_width=True)
+# Analytics Page
+elif page == "Analytics":
+    st.title("📈 Model Analytics")
+
+    # Generate predictions
+    y_pred = model.predict(scaler.transform(X))
+
+    # Confusion Matrix
+    st.subheader("Confusion Matrix")
+    fig, ax = plt.subplots(figsize=(8, 6))
+    sns.heatmap(confusion_matrix(y, y_pred), annot=True, fmt="d", cmap="Blues", ax=ax)
+    ax.set_xlabel("Predicted")
+    ax.set_ylabel("Actual")
+    st.pyplot(fig)
+
+    # Classification Report
+    st.subheader("Classification Report")
+    report = classification_report(y, y_pred, output_dict=True)
+    st.dataframe(pd.DataFrame(report).transpose())
+
+    # Accuracy
+    st.subheader("Model Accuracy")
+    accuracy = accuracy_score(y, y_pred)
+    st.metric("Accuracy", f"{accuracy:.2%}")
+
+    # ROC Curve (if applicable)
+    if hasattr(model, "predict_proba") and len(np.unique(y)) > 2:
+        st.subheader("ROC Curve")
+        fig, ax = plt.subplots(figsize=(8, 6))
+        for i in range(len(np.unique(y))):
+            y_true = (y == i).astype(int)
+            y_probs = model.predict_proba(scaler.transform(X))[:, i]
+            fpr, tpr, _ = roc_curve(y_true, y_probs)
+            roc_auc = auc(fpr, tpr)
+            ax.plot(fpr, tpr, label=f"Class {i} (AUC = {roc_auc:.2f})")
+        ax.plot([0, 1], [0, 1], color="grey", linestyle="--")
+        ax.set_xlabel("False Positive Rate")
+        ax.set_ylabel("True Positive Rate")
+        ax.legend(loc="lower right")
+        st.pyplot(fig)
+
+    # Precision-Recall Curve (if applicable)
+    if hasattr(model, "predict_proba"):
+        st.subheader("Precision-Recall Curve")
+        fig, ax = plt.subplots(figsize=(8, 6))
+        for i in range(len(np.unique(y))):
+            y_true = (y == i).astype(int)
+            precision, recall, _ = precision_recall_curve(y_true, model.predict_proba(scaler.transform(X))[:, i])
+            ax.plot(recall, precision, label=f'Class {i}')
+        ax.set_xlabel("Recall")
+        ax.set_ylabel("Precision")
+        ax.legend()
+        st.pyplot(fig)
+
+# About Page
+elif page == "About":
+    st.title("About the Project")
+
+    # Evaluate the best model
+    y_pred = model.predict(scaler.transform(X))
+    test_accuracy = accuracy_score(y, y_pred)
+
+    st.markdown("""
+    ## 🍷 Wine Quality Prediction Project
+    
+    ### Project Overview
+    This application predicts wine quality based on physicochemical properties using machine learning.
+    
+    ### Key Features:
+    - Interactive quality prediction
+    - Model performance analytics
+    - Feature importance visualization
+    
+    ### Technical Details:
+    - **Model Type**: Random Forest Classifier
+    - **Accuracy**: {:.2f}%
+    - **Dataset**: Wine Quality Dataset ({} samples)
+    """.format(test_accuracy * 100, len(df)))
+
+    st.markdown("---")
+    st.write("Built with ❤️ using Streamlit")
