@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Header Section -->
+    <div class="text-center mb-12 animate__animated animate__fadeIn">
+        <h2 class="text-4xl font-bold text-primary mb-4">🍇 Wine Quality Analytics</h2>
+        <p class="text-secondary text-lg">Explore our model's performance through detailed visualizations</p>
+    </div>
+
+    <!-- Graph Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Confusion Matrix -->
+        <div class="wine-card p-6 animate__animated animate__fadeInUp">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-chart-pie text-secondary text-2xl mr-3"></i>
+                <h3 class="text-2xl font-semibold text-primary">Confusion Matrix</h3>
+            </div>
+            <div class="graph-container overflow-hidden rounded-lg">
+                <img src="data:image/png;base64,{{ plot_urls['confusion_matrix'] }}" 
+                     alt="Confusion Matrix"
+                     class="w-full h-auto hover:scale-105 transition-transform duration-300">
+            </div>
+        </div>
+
+        <!-- Classification Report -->
+        <div class="wine-card p-6 animate__animated animate__fadeInUp">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-file-alt text-secondary text-2xl mr-3"></i>
+                <h3 class="text-2xl font-semibold text-primary">Classification Report</h3>
+            </div>
+            <div class="graph-container overflow-hidden rounded-lg">
+                <img src="data:image/png;base64,{{ plot_urls['classification_report'] }}" 
+                     alt="Classification Report"
+                     class="w-full h-auto hover:scale-105 transition-transform duration-300">
+            </div>
+        </div>
+
+        <!-- Model Accuracy -->
+        <div class="wine-card p-6 animate__animated animate__fadeInUp">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-tachometer-alt text-secondary text-2xl mr-3"></i>
+                <h3 class="text-2xl font-semibold text-primary">Model Accuracy</h3>
+            </div>
+            <div class="graph-container overflow-hidden rounded-lg">
+                <img src="data:image/png;base64,{{ plot_urls['model_accuracy'] }}" 
+                     alt="Model Accuracy"
+                     class="w-full h-auto hover:scale-105 transition-transform duration-300">
+            </div>
+        </div>
+
+        <!-- ROC Curve -->
+        <div class="wine-card p-6 animate__animated animate__fadeInUp">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-chart-line text-secondary text-2xl mr-3"></i>
+                <h3 class="text-2xl font-semibold text-primary">ROC Curve</h3>
+            </div>
+            <div class="graph-container overflow-hidden rounded-lg">
+                <img src="data:image/png;base64,{{ plot_urls['roc_curve'] }}" 
+                     alt="ROC Curve"
+                     class="w-full h-auto hover:scale-105 transition-transform duration-300">
+            </div>
+        </div>
+
+        <!-- Precision-Recall Curve -->
+        <div class="wine-card p-6 animate__animated animate__fadeInUp">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-balance-scale text-secondary text-2xl mr-3"></i>
+                <h3 class="text-2xl font-semibold text-primary">Precision-Recall Curve</h3>
+            </div>
+            <div class="graph-container overflow-hidden rounded-lg">
+                <img src="data:image/png;base64,{{ plot_urls['precision_recall_curve'] }}" 
+                     alt="Precision-Recall Curve"
+                     class="w-full h-auto hover:scale-105 transition-transform duration-300">
+            </div>
+        </div>
+    </div>
+
+    <!-- Info Section -->
+    <div class="wine-card p-8 mt-12 animate__animated animate__fadeIn">
+        <div class="text-center">
+            <h3 class="text-3xl font-bold text-primary mb-4">📊 Understanding the Metrics</h3>
+            <p class="text-secondary mb-6 max-w-3xl mx-auto">
+                Our comprehensive analytics provide deep insights into the model's performance. 
+                Each visualization helps us understand different aspects of the prediction accuracy 
+                and model behavior, ensuring we deliver the most reliable wine quality assessments.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

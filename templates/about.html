@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Wine Quality Prediction 🍷</title>
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Animation library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --primary: #722F37;
+            --secondary: #A62639; 
+            --accent: #E4B1AB;
+            --light: #F9F1F0;
+            --dark: #311E10;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            background-image: url('https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/img/blurry-gradient.svg');
+            background-size: cover;
+            background-attachment: fixed;
+        }
+        .wine-card {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        .wine-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            transform: scale(1.05);
+        }
+        .navbar {
+            background-color: var(--primary);
+            color: white;
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .nav-link:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background-color: var(--light);
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover:after {
+            width: 100%;
+        }
+        .feature-input {
+            position: relative;
+        }
+        .feature-input label {
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            background-color: white;
+            padding: 0 5px;
+            font-size: 0.8rem;
+            color: var(--primary);
+        }
+        .feature-input input {
+            padding-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar shadow-md">
+        <div class="container mx-auto py-4 px-6 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-wine-glass-alt text-2xl"></i>
+                <h1 class="text-xl font-bold">Wine Quality Predictor 🍷</h1>
+            </div>
+            <nav>
+                <ul class="flex space-x-6">
+                    <li><a href="/" class="nav-link hover:text-gray-200"><i class="fas fa-home mr-1"></i> Home</a></li>
+                    <li><a href="/graphs" class="nav-link hover:text-gray-200"><i class="fas fa-chart-line mr-1"></i> Analytics</a></li>
+                    <li><a href="/about" class="nav-link hover:text-gray-200"><i class="fas fa-info-circle mr-1"></i> About</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="wine-card p-6 animate__animated animate__fadeIn">
+            <h2 class="text-2xl font-bold mb-6 text-center">About Wine Quality Prediction 🍷</h2>
+            
+            <div class="space-y-4">
+                <h3 class="text-xl font-semibold">Project Overview</h3>
+                <p class="text-gray-700">
+                    The Wine Quality Prediction project aims to predict the quality of wine based on its physicochemical properties. 
+                    The project leverages machine learning algorithms to analyze and predict wine quality, which is crucial for winemakers 
+                    and consumers alike. The dataset used in this project contains various features such as acidity, pH, alcohol content, 
+                    and more, which are used to determine the quality of the wine.
+                </p>
+
+                <h3 class="text-xl font-semibold">Objectives</h3>
+                <ul class="list-disc list-inside text-gray-700">
+                    <li>To predict the quality of wine using machine learning models.</li>
+                    <li>To compare the performance of different machine learning algorithms.</li>
+                    <li>To provide an interactive web interface for users to input wine features and get quality predictions.</li>
+                    <li>To visualize the model's performance using various metrics such as accuracy, confusion matrix, and ROC curves.</li>
+                </ul>
+
+                <h3 class="text-xl font-semibold">Methodology</h3>
+                <p class="text-gray-700">
+                    The project follows a structured approach to build and evaluate the wine quality prediction model:
+                </p>
+                <ol class="list-decimal list-inside text-gray-700">
+                    <li><strong>Data Preprocessing:</strong> Handling missing values, normalizing labels, and addressing class imbalance using SMOTE.</li>
+                    <li><strong>Feature Engineering:</strong> Dropping highly correlated features and standardizing the dataset.</li>
+                    <li><strong>Model Selection:</strong> Testing multiple machine learning models including Logistic Regression, Random Forest, XGBoost, LightGBM, and SVM.</li>
+                    <li><strong>Hyperparameter Tuning:</strong> Using Optuna for hyperparameter optimization to improve model performance.</li>
+                    <li><strong>Model Evaluation:</strong> Evaluating the models using cross-validation, accuracy, confusion matrix, and classification reports.</li>
+                    <li><strong>Deployment:</strong> Deploying the best-performing model using Flask to create a web application.</li>
+                </ol>
+
+                <h3 class="text-xl font-semibold">Results</h3>
+                <p class="text-gray-700">
+                    The best-performing model achieved an accuracy of <strong>{{ test_accuracy }}</strong> on the test dataset. 
+                    The model's performance was further analyzed using various metrics such as the confusion matrix, ROC curve, 
+                    and precision-recall curve. The results indicate that the model is well-balanced and generalizes well to unseen data.
+                </p>
+
+                <h3 class="text-xl font-semibold">Future Work</h3>
+                <ul class="list-disc list-inside text-gray-700">
+                    <li>Incorporating more advanced machine learning techniques such as deep learning.</li>
+                    <li>Expanding the dataset to include more diverse wine samples.</li>
+                    <li>Adding more interactive visualizations to the web interface.</li>
+                    <li>Deploying the model on a cloud platform for scalability.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-gray-800 text-white py-6 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <h3 class="text-lg font-semibold">Wine Quality Prediction 🍷</h3>
+                    <p class="text-gray-400">Powered by Machine Learning</p>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors duration-300">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors duration-300">
+                        <i class="fab fa-linkedin text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors duration-300">
+                        <i class="fab fa-twitter text-xl"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="mt-4 text-center text-gray-400 text-sm">
+                &copy; 2025 Wine Quality Prediction. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        // Animation on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const elements = document.querySelectorAll('.animate__animated');
+            elements.forEach(element => {
+                element.classList.add('animate__fadeIn');
+            });
+        });
+
+        // Smooth scrolling for internal links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

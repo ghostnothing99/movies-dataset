@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wine Quality Prediction 🍷</title>
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Animation library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --primary: #722F37;
+            --secondary: #A62639; 
+            --accent: #E4B1AB;
+            --light: #F9F1F0;
+            --dark: #311E10;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            background-image: url('https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/img/blurry-gradient.svg');
+            background-size: cover;
+            background-attachment: fixed;
+        }
+        .wine-card {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        .wine-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            transform: scale(1.05);
+        }
+        input, select {
+            transition: all 0.3s ease;
+            border: 1px solid #ddd;
+        }
+        input:focus, select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(228, 177, 171, 0.3);
+        }
+        .feature-input {
+            position: relative;
+        }
+        .feature-input label {
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            background-color: white;
+            padding: 0 5px;
+            font-size: 0.8rem;
+            color: var(--primary);
+        }
+        .feature-input input {
+            padding-top: 15px;
+        }
+        .sample-card {
+            border: 2px solid var(--accent);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .sample-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary);
+            background-color: rgba(228, 177, 171, 0.1);
+        }
+        .sample-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: var(--primary);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar shadow-md">
+        <div class="container mx-auto py-4 px-6 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-wine-glass-alt text-2xl"></i>
+                <h1 class="text-xl font-bold">Wine Quality Predictor 🍷</h1>
+            </div>
+            <nav>
+                <ul class="flex space-x-6">
+                    <li><a href="/" class="nav-link hover:text-gray-200"><i class="fas fa-home mr-1"></i> Home</a></li>
+                    <li><a href="/graphs" class="nav-link hover:text-gray-200"><i class="fas fa-chart-line mr-1"></i> Analytics</a></li>
+                    <li><a href="/about" class="nav-link hover:text-gray-200"><i class="fas fa-info-circle mr-1"></i> About</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="wine-card p-6 animate__animated animate__fadeIn">
+            <h2 class="text-2xl font-bold mb-6 text-center">Predict Wine Quality</h2>
+            
+            <!-- Sample Inputs Section -->
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold mb-4">Try sample wines:</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="sampleContainer">
+                    <!-- Sample cards will be dynamically inserted here -->
+                </div>
+            </div>
+
+            <form action="/predict" method="POST" class="space-y-4">
+                <!-- Form Fields -->
+                <div class="feature-input">
+                    <label for="fixed_acidity">Fixed Acidity</label>
+                    <input type="number" step="any" name="fixed_acidity" id="fixed_acidity" required
+                           class="w-full p-2 border rounded focus:outline-none focus:border-accent">
+                </div>
+                <div class="feature-input">
+                    <label for="volatile_acidity">Volatile Acidity</label>
+                    <input type="number" step="any" name="volatile_acidity" id="volatile_acidity" required
+                           class="w-full p-2 border rounded focus:outline-none focus:border-accent">
+                </div>
+                <div class="feature-input">
+                    <label for="citric_acid">Citric Acid</label>
+                    <input type="number" step="any" name="citric_acid" id="citric_acid" required
+                           class="w-full p-2 border rounded focus:outline-none focus:border-accent">
+                </div>
+                <div class="feature-input">
+                    <label for="residual_sugar">Residual Sugar</label>
+                    <input type="number" step="any" name="residual_sugar" id="residual_sugar" required
+                           class="w-full p-2 border rounded focus:outline-none focus:border-accent">
+                </div>
+                <div class="feature-input">
+                    <label for="chlorides">Chlorides</label>
+                    <input type="number" step="any" name="chlorides" id="chlorides" required
+                           class="w-full p-2 border rounded focus:outline-none focus:border-accent">
+                </div>
+                <div class="feature-input">
+                    <label for="free_sulfur_dioxide">Free Sulfur Dioxide</label>
+                    <input type="number" step="any" name="free_sulfur_dioxide" id="free_sulfur_dioxide" required
+                           class="w-full p-2 border rounded focus:outline-none focus:border-accent">
+                </div>
+                <div class="feature-input">
+                    <label for="total_sulfur_dioxide">Total Sulfur Dioxide</label>
+                    <input type="number" step="any" name="total_sulfur_dioxide" id="total_sulfur_dioxide" required
+                           class="w-full p-2 border rounded focus:outline-none focus:border-accent">
+                </div>
+                <div class="feature-input">
+                    <label for="density">Density</label>
+                    <input type="number" step="any" name="density" id="density" required
+                           class="w-full p-2 border rounded focus:outline-none focus:border-accent">
+                </div>
+                <div class="feature-input">
+                    <label for="pH">pH</label>
+                    <input type="number" step="any" name="pH" id="pH" required
+                           class="w-full p-2 border rounded focus:outline-none focus:border-accent">
+                </div>
+                <div class="feature-input">
+                    <label for="sulphates">Sulphates</label>
+                    <input type="number" step="any" name="sulphates" id="sulphates" required
+                           class="w-full p-2 border rounded focus:outline-none focus:border-accent">
+                </div>
+                <div class="feature-input">
+                    <label for="alcohol">Alcohol</label>
+                    <input type="number" step="any" name="alcohol" id="alcohol" required
+                           class="w-full p-2 border rounded focus:outline-none focus:border-accent">
+                </div>
+                <!-- Submit Button -->
+                <button type="submit" class="btn-primary w-full py-2 rounded">
+                    Predict Quality <i class="fas fa-arrow-right ml-2"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="bg-gray-800 text-white py-6 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <h3 class="text-lg font-semibold">Wine Quality Prediction 🍷</h3>
+                    <p class="text-gray-400">Powered by Machine Learning</p>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors duration-300">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors duration-300">
+                        <i class="fab fa-linkedin text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors duration-300">
+                        <i class="fab fa-twitter text-xl"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="mt-4 text-center text-gray-400 text-sm">
+                &copy; 2025 Wine Quality Prediction. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        // Sample data (replace with actual dataset samples)
+        const samples = [
+            {
+                fixed_acidity: 5.6,
+                volatile_acidity: 0.615,
+                citric_acid: 0,
+                residual_sugar: 1.6,
+                chlorides: 0.073,
+                free_sulfur_dioxide: 15,
+                total_sulfur_dioxide: 59,
+                density: 0.9943,
+                pH: 3.26,
+                sulphates: 0.75,
+                alcohol: 9.1
+            },
+            {
+                fixed_acidity: 7.8,
+                volatile_acidity: 0.88,
+                citric_acid: 0.0,
+                residual_sugar: 2.6,
+                chlorides: 0.098,
+                free_sulfur_dioxide: 25,
+                total_sulfur_dioxide: 67,
+                density: 0.9968,
+                pH: 3.2,
+                sulphates: 0.68,
+                alcohol: 9.8
+            },
+            {
+                fixed_acidity: 6.7,
+                volatile_acidity: 0.32,
+                citric_acid: 0.44,
+                residual_sugar: 2.4,
+                chlorides: 0.061,
+                free_sulfur_dioxide: 24,
+                total_sulfur_dioxide: 34,
+                density: 0.9928,
+                pH: 3.29,
+                sulphates: 0.8,
+                alcohol: 11.6
+            }
+        ];
+
+        // Function to populate sample cards
+        function populateSamples() {
+            const container = document.getElementById('sampleContainer');
+            container.innerHTML = '';
+
+            samples.forEach((sample, index) => {
+                const card = document.createElement('div');
+                card.className = 'sample-card wine-card p-4 relative';
+                card.innerHTML = `
+                    <div class="sample-badge">Sample ${index + 1}</div>
+                    <p class="text-sm"><span class="font-medium">Alcohol:</span> ${sample.alcohol}%</p>
+                    <p class="text-sm"><span class="font-medium">pH:</span> ${sample.pH}</p>
+                    <p class="text-sm"><span class="font-medium">Acidity:</span> ${sample.fixed_acidity}</p>
+                `;
+
+                card.addEventListener('click', () => populateForm(sample));
+                container.appendChild(card);
+            });
+        }
+
+        // Function to populate form with sample data
+        function populateForm(sample) {
+            Object.entries(sample).forEach(([key, value]) => {
+                const input = document.querySelector(`[name="${key}"]`);
+                if (input) input.value = value;
+            });
+        }
+
+        // Initialize samples when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            populateSamples();
+            
+            // Animation on page load
+            const elements = document.querySelectorAll('.animate__animated');
+            elements.forEach(element => {
+                element.classList.add('animate__fadeIn');
+            });
+
+            // Smooth scrolling for internal links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
